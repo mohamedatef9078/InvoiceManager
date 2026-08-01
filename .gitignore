@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+
+# Environment
+.env
+
+# Database
+*.db
+
+# Build
+build/
+dist/
+
+# Backups
+backups/
+temporary_backups/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
