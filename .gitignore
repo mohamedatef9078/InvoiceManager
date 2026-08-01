@@ -21,3 +21,4 @@ temporary_backups/
 
 # Logs
 *.log
+*.xml
