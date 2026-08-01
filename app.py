@@ -72,6 +72,10 @@ app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
 def service_worker():
     return app.send_static_file("service-worker.js")
 
+@app.route("/manifest.json")
+def manifest():
+    return app.send_static_file("manifest.json")
+
 ALLOWED_EXTENSIONS = {"xml"}
 
 
