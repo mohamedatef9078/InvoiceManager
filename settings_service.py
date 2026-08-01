@@ -10,13 +10,20 @@ from database_postgres import get_connection
 # إعدادات الملفات
 # =========================================================
 
+import os
+from pathlib import Path
+
 BASE_DIR = Path(__file__).resolve().parent
 
-UPLOADS_DIRECTORY = (
-    BASE_DIR
-    / "static"
-    / "uploads"
-)
+# على Vercel لا يمكن الكتابة داخل مجلد المشروع
+if os.environ.get("VERCEL"):
+    UPLOADS_DIRECTORY = Path("/tmp/uploads")
+else:
+    UPLOADS_DIRECTORY = (
+        BASE_DIR
+        / "static"
+        / "uploads"
+    )
 
 UPLOADS_DIRECTORY.mkdir(
     parents=True,
