@@ -68,6 +68,10 @@ app.config["SECRET_KEY"] = (
 
 app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
 
+@app.route("/service-worker.js")
+def service_worker():
+    return app.send_static_file("service-worker.js")
+
 ALLOWED_EXTENSIONS = {"xml"}
 
 
