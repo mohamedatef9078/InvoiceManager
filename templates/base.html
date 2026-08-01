@@ -18,7 +18,22 @@
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='style.css') }}"
+        
     >
+    <link
+    rel="manifest"
+    href="{{ url_for('static', filename='manifest.json') }}"
+>
+
+<meta
+    name="theme-color"
+    content="#2563eb"
+>
+
+<link
+    rel="apple-touch-icon"
+    href="{{ url_for('static', filename='icons/icon-192.png') }}"
+>
 </head>
 
 <body>
@@ -385,7 +400,18 @@
 
     {% block scripts %}
     {% endblock %}
-
+<script>
+    if ("serviceWorker" in navigator) {
+        window.addEventListener(
+            "load",
+            function () {
+                navigator.serviceWorker.register(
+                    "/static/service-worker.js"
+                );
+            }
+        );
+    }
+</script>
 </body>
 
 </html>
