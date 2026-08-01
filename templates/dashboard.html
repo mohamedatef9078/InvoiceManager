@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}
+    الرئيسية - برنامج إدارة الفواتير
+{% endblock %}
+
+{% block page_title %}
+    لوحة التحكم
+{% endblock %}
+
+{% block page_description %}
+    نظرة سريعة على العملاء والفواتير والإجماليات
+{% endblock %}
+
+{% block content %}
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            👥
+        </div>
+
+        <div class="stat-info">
+            <span>
+                عدد العملاء
+            </span>
+
+            <strong>
+                {{ statistics.customer_count }}
+            </strong>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            📄
+        </div>
+
+        <div class="stat-info">
+            <span>
+                عدد الفواتير
+            </span>
+
+            <strong>
+                {{ statistics.invoice_count }}
+            </strong>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            💰
+        </div>
+
+        <div class="stat-info">
+            <span>
+                الإجمالي قبل الضريبة
+            </span>
+
+            <strong>
+                {{ "%.2f"|format(statistics.before_tax) }}
+            </strong>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            🧾
+        </div>
+
+        <div class="stat-info">
+            <span>
+                ضريبة القيمة المضافة
+            </span>
+
+            <strong>
+                {{ "%.2f"|format(statistics.vat) }}
+            </strong>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            ➖
+        </div>
+
+        <div class="stat-info">
+            <span>
+                خصم تحت حساب الضريبة
+            </span>
+
+            <strong>
+                {{ "%.2f"|format(statistics.withholding_tax) }}
+            </strong>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            ✅
+        </div>
+
+        <div class="stat-info">
+            <span>
+                الإجمالي بعد الضريبة
+            </span>
+
+            <strong>
+                {{ "%.2f"|format(statistics.after_tax) }}
+            </strong>
+        </div>
+    </div>
+
+</div>
+
+<div class="content-card">
+
+    <div class="card-header">
+
+        <div>
+            <h3>
+                أحدث الفواتير
+            </h3>
+
+            <p>
+                آخر 10 فواتير تمت إضافتها
+            </p>
+        </div>
+
+        <a
+            href="{{ url_for('invoices') }}"
+            class="btn btn-primary"
+        >
+            عرض كل الفواتير
+        </a>
+
+    </div>
+
+    {% if latest_invoices %}
+
+        <div class="table-responsive">
+
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th>
+                            رقم الفاتورة
+                        </th>
+
+                        <th>
+                            العميل
+                        </th>
+
+                        <th>
+                            التاريخ
+                        </th>
+
+                        <th>
+                            قبل الضريبة
+                        </th>
+
+                        <th>
+                            الضريبة
+                        </th>
+
+                        <th>
+                            الخصم
+                        </th>
+
+                        <th>
+                            بعد الضريبة
+                        </th>
+
+                        <th>
+                            الإجراءات
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for invoice in latest_invoices %}
+
+                        <tr>
+
+                            <td>
+                                {{ invoice.invoice_number }}
+                            </td>
+
+                            <td>
+                                {{ invoice.customer_name }}
+                            </td>
+
+                            <td>
+                                {{ invoice.invoice_date or "-" }}
+                            </td>
+
+                            <td>
+                                {{ "%.2f"|format(invoice.before_tax) }}
+                            </td>
+
+                            <td>
+                                {{ "%.2f"|format(invoice.vat) }}
+                            </td>
+
+                            <td>
+                                {{ "%.2f"|format(invoice.withholding_tax) }}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    {{ "%.2f"|format(invoice.after_tax) }}
+                                </strong>
+                            </td>
+
+                            <td>
+
+                                <a
+                                    href="{{ url_for(
+                                        'invoice_details',
+                                        invoice_id=invoice.id
+                                    ) }}"
+                                    class="btn btn-small btn-secondary"
+                                >
+                                    عرض
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                📂
+            </div>
+
+            <h3>
+                لا توجد فواتير حتى الآن
+            </h3>
+
+            <p>
+                أضف عميلًا أولًا ثم ارفع ملف الفاتورة بصيغة XML.
+            </p>
+
+            <a
+                href="{{ url_for('customers') }}"
+                class="btn btn-primary"
+            >
+                إضافة عميل
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

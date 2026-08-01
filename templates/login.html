@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        تسجيل الدخول - برنامج إدارة الفواتير
+    </title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 24px;
+
+            font-family:
+                "Segoe UI",
+                Tahoma,
+                Arial,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0f172a 0%,
+                    #1e3a8a 50%,
+                    #2563eb 100%
+                );
+
+            color: #0f172a;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .login-card {
+            background:
+                rgba(255, 255, 255, 0.97);
+
+            border-radius: 24px;
+
+            padding: 34px;
+
+            box-shadow:
+                0 24px 70px
+                rgba(0, 0, 0, 0.28);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.35);
+        }
+
+        .login-brand {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .brand-icon {
+            width: 76px;
+            height: 76px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin: 0 auto 16px;
+
+            border-radius: 22px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #60a5fa
+                );
+
+            color: white;
+
+            font-size: 37px;
+
+            box-shadow:
+                0 14px 30px
+                rgba(37, 99, 235, 0.3);
+        }
+
+        .login-brand h1 {
+            margin-bottom: 8px;
+
+            font-size: 27px;
+            font-weight: 800;
+        }
+
+        .login-brand p {
+            color: #64748b;
+
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .flash-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            margin-bottom: 18px;
+        }
+
+        .alert {
+            padding: 13px 14px;
+
+            border-radius: 11px;
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .alert-success {
+            color: #166534;
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+        }
+
+        .alert-danger {
+            color: #991b1b;
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+        }
+
+        .alert-warning {
+            color: #92400e;
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+        }
+
+        .alert-info {
+            color: #075985;
+            background: #e0f2fe;
+            border: 1px solid #bae6fd;
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        .form-label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            color: #334155;
+
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .form-control {
+            width: 100%;
+            min-height: 48px;
+
+            padding: 11px 13px;
+
+            border:
+                1px solid #cbd5e1;
+
+            border-radius: 12px;
+
+            background: white;
+
+            color: #0f172a;
+
+            font-size: 15px;
+
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 4px
+                rgba(37, 99, 235, 0.12);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper .form-control {
+            padding-left: 54px;
+        }
+
+        .show-password {
+            position: absolute;
+
+            left: 8px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            width: 38px;
+            height: 38px;
+
+            border: 0;
+            border-radius: 9px;
+
+            background: #f1f5f9;
+
+            color: #475569;
+
+            font-size: 17px;
+
+            cursor: pointer;
+        }
+
+        .login-button {
+            width: 100%;
+            min-height: 50px;
+
+            margin-top: 5px;
+
+            border: 0;
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #1d4ed8
+                );
+
+            color: white;
+
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 10px 22px
+                rgba(37, 99, 235, 0.25);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 14px 28px
+                rgba(37, 99, 235, 0.32);
+        }
+
+        .login-footer {
+            margin-top: 22px;
+
+            padding-top: 18px;
+
+            border-top:
+                1px solid #e2e8f0;
+
+            text-align: center;
+        }
+
+        .login-footer p {
+            margin-bottom: 5px;
+
+            color: #64748b;
+
+            font-size: 12px;
+        }
+
+        .login-footer small {
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        @media (max-width: 500px) {
+            .login-card {
+                padding: 26px 20px;
+                border-radius: 18px;
+            }
+
+            .login-brand h1 {
+                font-size: 23px;
+            }
+
+            .brand-icon {
+                width: 66px;
+                height: 66px;
+
+                font-size: 31px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-wrapper">
+
+        <div class="login-card">
+
+            <div class="login-brand">
+
+                <div class="brand-icon">
+                    📑
+                </div>
+
+                <h1>
+                    إدارة الفواتير
+                </h1>
+
+                <p>
+                    سجّل الدخول للوصول إلى العملاء والفواتير والتقارير
+                </p>
+
+            </div>
+
+
+            {% with messages = get_flashed_messages(
+                with_categories=true
+            ) %}
+
+                {% if messages %}
+
+                    <div class="flash-messages">
+
+                        {% for category, message in messages %}
+
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+            {% endwith %}
+
+
+            <form
+                action="{{ url_for('login') }}"
+                method="POST"
+            >
+
+                <div class="form-group">
+
+                    <label
+                        for="username"
+                        class="form-label"
+                    >
+                        اسم المستخدم
+                    </label>
+
+                    <input
+                        id="username"
+                        name="username"
+                        type="text"
+                        class="form-control"
+                        placeholder="اكتب اسم المستخدم"
+                        autocomplete="username"
+                        autofocus
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label
+                        for="password"
+                        class="form-label"
+                    >
+                        كلمة المرور
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            class="form-control"
+                            placeholder="اكتب كلمة المرور"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            onclick="togglePassword()"
+                            aria-label="إظهار كلمة المرور"
+                        >
+                            👁️
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="login-button"
+                >
+                    تسجيل الدخول
+                </button>
+
+            </form>
+
+
+            <div class="login-footer">
+
+                <p>
+                    برنامج إدارة الفواتير الإلكترونية
+                </p>
+
+                <small>
+                    الإصدار 2.0
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+        function togglePassword() {
+            const passwordInput =
+                document.getElementById("password");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+            } else {
+                passwordInput.type = "password";
+            }
+        }
+    </script>
+
+</body>
+
+</html>

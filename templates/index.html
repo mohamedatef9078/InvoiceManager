@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>برنامج إدارة الفواتير</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <!-- عنوان البرنامج -->
+    <header class="main-header">
+        <div class="container">
+            <h1>📑 برنامج إدارة الفواتير</h1>
+
+            <p>
+                إدارة العملاء ورفع فواتير XML وحفظها تلقائيًا
+            </p>
+        </div>
+    </header>
+
+
+    <main class="container py-4">
+
+        <!-- الإحصائيات -->
+        <section class="row g-3 mb-4">
+
+            <div class="col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon">👤</div>
+
+                    <div>
+                        <span class="stat-label">
+                            عدد العملاء
+                        </span>
+
+                        <h2>
+                            {{ customers | length }}
+                        </h2>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-6">
+                <div class="stat-card">
+                    <div class="stat-icon">🧾</div>
+
+                    <div>
+                        <span class="stat-label">
+                            عدد الفواتير
+                        </span>
+
+                        <h2>
+                            {{ invoices | length }}
+                        </h2>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- إضافة عميل -->
+        <section class="card app-card mb-4">
+
+            <div class="card-header-custom">
+                <div>
+                    <h3>👤 إدارة العملاء</h3>
+
+                    <p>
+                        أضف العميل مرة واحدة، ثم اختره عند رفع الفواتير
+                    </p>
+                </div>
+            </div>
+
+
+            <div class="card-body p-4">
+
+                <form
+                    action="{{ url_for('add_customer') }}"
+                    method="POST"
+                >
+
+                    <div class="row g-3 align-items-end">
+
+                        <div class="col-md-9">
+
+                            <label
+                                for="customer_name"
+                                class="form-label"
+                            >
+                                اسم العميل
+                            </label>
+
+                            <input
+                                type="text"
+                                id="customer_name"
+                                name="customer_name"
+                                class="form-control"
+                                placeholder="اكتب اسم العميل"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-3">
+
+                            <button
+                                type="submit"
+                                class="btn btn-success w-100"
+                            >
+                                ➕ إضافة العميل
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+
+                {% if customers %}
+
+                    <hr class="my-4">
+
+
+                    <div class="customers-list">
+
+                        {% for customer in customers %}
+
+                            <div class="customer-item">
+
+                                <span class="customer-name">
+                                    👤 {{ customer.name }}
+                                </span>
+
+
+                                <a
+                                    href="{{ url_for(
+                                        'delete_customer',
+                                        customer_id=customer.id
+                                    ) }}"
+                                    class="btn btn-sm btn-outline-danger"
+                                    onclick="
+                                        return confirm(
+                                            'هل تريد حذف العميل؟ لن يتم حذفه إذا كانت لديه فواتير.'
+                                        );
+                                    "
+                                >
+                                    حذف
+                                </a>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty-message mt-4">
+                        لا يوجد عملاء حتى الآن. أضف أول عميل.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+        <!-- إضافة فاتورة -->
+        <section class="card app-card mb-4">
+
+            <div class="card-header-custom">
+
+                <div>
+                    <h3>📤 إضافة فاتورة جديدة</h3>
+
+                    <p>
+                        اختر العميل ثم ارفع ملف الفاتورة بصيغة XML
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="card-body p-4">
+
+                {% if customers %}
+
+                    <form
+                        action="{{ url_for('upload') }}"
+                        method="POST"
+                        enctype="multipart/form-data"
+                    >
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+
+                                <label
+                                    for="customer_id"
+                                    class="form-label"
+                                >
+                                    اسم العميل
+                                </label>
+
+                                <select
+                                    id="customer_id"
+                                    name="customer_id"
+                                    class="form-select"
+                                    required
+                                >
+
+                                    <option value="">
+                                        اختر العميل
+                                    </option>
+
+                                    {% for customer in customers %}
+
+                                        <option value="{{ customer.id }}">
+                                            {{ customer.name }}
+                                        </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="col-md-6">
+
+                                <label
+                                    for="xml_file"
+                                    class="form-label"
+                                >
+                                    ملف الفاتورة XML
+                                </label>
+
+                                <input
+                                    type="file"
+                                    id="xml_file"
+                                    name="xml_file"
+                                    class="form-control"
+                                    accept=".xml,text/xml,application/xml"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary w-100 mt-4"
+                        >
+                            ➕ إضافة الفاتورة
+                        </button>
+
+                    </form>
+
+                {% else %}
+
+                    <div class="alert alert-warning mb-0">
+                        يجب إضافة عميل أولًا قبل رفع الفاتورة.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+        <!-- جدول الفواتير -->
+        <section class="card app-card">
+
+            <div class="card-header-custom">
+
+                <div>
+                    <h3>📋 سجل الفواتير</h3>
+
+                    <p>
+                        جميع الفواتير المحفوظة في قاعدة البيانات
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="card-body p-0">
+
+                {% if invoices %}
+
+                    <div class="table-responsive">
+
+                        <table
+                            class="table invoice-table
+                                   table-hover
+                                   align-middle
+                                   text-center
+                                   mb-0"
+                        >
+
+                            <thead>
+
+                                <tr>
+                                    <th>#</th>
+
+                                    <th>العميل</th>
+
+                                    <th>رقم الفاتورة</th>
+
+                                    <th>التاريخ</th>
+
+                                    <th>قبل الضريبة</th>
+
+                                    <th>
+                                        ضريبة القيمة المضافة
+                                    </th>
+
+                                    <th>
+                                        خصم تحت حساب الضريبة
+                                    </th>
+
+                                    <th>الإجمالي بعد الضريبة</th>
+
+                                    <th>الإجراءات</th>
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                {% for invoice in invoices %}
+
+                                    <tr>
+
+                                        <td>
+                                            {{ loop.index }}
+                                        </td>
+
+
+                                        <td>
+                                            <span class="client-badge">
+                                                {{ invoice.client_name }}
+                                            </span>
+                                        </td>
+
+
+                                        <td>
+                                            <strong>
+                                                {{ invoice.invoice_number }}
+                                            </strong>
+                                        </td>
+
+
+                                        <td>
+                                            {{ invoice.invoice_date }}
+                                        </td>
+
+
+                                        <td>
+                                            {{ "%.2f" | format(
+                                                invoice.before_tax or 0
+                                            ) }}
+                                        </td>
+
+
+                                        <td>
+                                            {{ "%.2f" | format(
+                                                invoice.vat or 0
+                                            ) }}
+                                        </td>
+
+
+                                        <td>
+                                            {{ "%.2f" | format(
+                                                invoice.withholding_tax or 0
+                                            ) }}
+                                        </td>
+
+
+                                        <td>
+                                            <strong class="total-value">
+                                                {{ "%.2f" | format(
+                                                    invoice.after_tax or 0
+                                                ) }}
+                                            </strong>
+                                        </td>
+
+
+                                        <td>
+
+                                            <div
+                                                class="action-buttons"
+                                            >
+
+                                                <a
+                                                    href="{{ url_for(
+                                                        'invoice_details',
+                                                        invoice_id=invoice.id
+                                                    ) }}"
+                                                    class="btn btn-sm btn-info"
+                                                >
+                                                    عرض
+                                                </a>
+
+
+                                                <a
+                                                    href="{{ url_for(
+                                                        'delete_invoice',
+                                                        invoice_id=invoice.id
+                                                    ) }}"
+                                                    class="btn btn-sm btn-danger"
+                                                    onclick="
+                                                        return confirm(
+                                                            'هل أنت متأكد من حذف الفاتورة؟'
+                                                        );
+                                                    "
+                                                >
+                                                    حذف
+                                                </a>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="empty-invoices">
+
+                        <div class="empty-icon">
+                            🧾
+                        </div>
+
+                        <h4>
+                            لا توجد فواتير حتى الآن
+                        </h4>
+
+                        <p>
+                            أضف عميلًا ثم ارفع أول ملف XML
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer class="app-footer">
+
+        <div class="container">
+            برنامج إدارة الفواتير الإلكترونية
+        </div>
+
+    </footer>
+
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+
+</body>
+
+</html>

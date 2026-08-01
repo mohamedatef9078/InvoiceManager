@@ -1,0 +1,63 @@
+{
+  "backup_version": 1,
+  "created_at": "2026-08-01T15:06:21.726891",
+  "database_type": "postgresql",
+  "tables": {
+    "users": [
+      {
+        "id": 1,
+        "full_name": "مدير النظام",
+        "username": "admin",
+        "password_hash": "scrypt:32768:8:1$SNk2qcniSMe19cOj$798b251be16a6ebcab72af3a2ec52fe04aef961c6d96262d0a990b8a91c0c992a13822c33e5424af4accb5ee219ebf55e43f2c94c2e1ed430f625e7735e86121",
+        "role": "admin",
+        "is_active": 1,
+        "created_at": "2026-08-01 11:19:59.889381"
+      },
+      {
+        "id": 2,
+        "full_name": "ملك",
+        "username": "malak",
+        "password_hash": "scrypt:32768:8:1$XNQ8Tr2mK4cSx53G$4499f58cd49bfd68d8a35ab1012bb94b60252bb3a951ad8c270b67ceaee910e0add70c90eeb50871bc41859325f9492ca441ad6e99af96f7de7866e87329360c",
+        "role": "employee",
+        "is_active": 1,
+        "created_at": "2026-08-01 11:41:36.984625"
+      }
+    ],
+    "customers": [
+      {
+        "id": 2,
+        "name": "محمود المحاسب",
+        "phone": "",
+        "notes": "",
+        "created_at": "2026-08-01 11:41:47.512670"
+      },
+      {
+        "id": 3,
+        "name": "احمد حمدى",
+        "phone": "",
+        "notes": "",
+        "created_at": "2026-08-01 11:41:53.165655"
+      }
+    ],
+    "invoices": [
+      {
+        "id": 1,
+        "customer_id": 3,
+        "invoice_number": "222",
+        "invoice_date": "31/07/2026",
+        "buyer_name": "شركة مياة الشرب والصرف الصحى بمطروح",
+        "buyer_registration": "278857485",
+        "buyer_address": "0 - المبني الكائن بجوارالاستادالخماسي منطقه حلقه السمك - قسم مرسى مطروح - مطـــــروح - EG",
+        "seller_name": "هالتاشي لاين للتوريدات و المقاولات",
+        "seller_registration": "781409411",
+        "seller_address": "55 - الاسكان المطور الحي6 6اكتوبر-الجيزه - قسم أول 6 أكتوبر - الجيزه - EG",
+        "before_tax": 78000.0,
+        "vat": 10920.0,
+        "withholding_tax": 780.0,
+        "after_tax": 88140.0,
+        "xml_filename": "KR4CGMPPJ24RCK0AS9DVXWYK10.xml",
+        "created_at": "2026-08-01 11:42:08.762028"
+      }
+    ]
+  }
+}

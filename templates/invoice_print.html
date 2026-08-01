@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        فاتورة رقم {{ invoice['invoice_number'] or '-' }}
+    </title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1d4ed8;
+            --primary-light: #eff6ff;
+            --primary-border: #bfdbfe;
+
+            --success: #15803d;
+            --danger: #b91c1c;
+
+            --text-dark: #0f172a;
+            --text-medium: #475569;
+            --text-light: #64748b;
+
+            --border: #dbe3ec;
+            --background: #eef2f7;
+            --white: #ffffff;
+        }
+
+        body {
+            min-height: 100vh;
+
+            padding: 30px;
+
+            font-family:
+                "Segoe UI",
+                Tahoma,
+                Arial,
+                sans-serif;
+
+            background: var(--background);
+            color: var(--text-dark);
+
+            direction: rtl;
+        }
+
+        .screen-actions {
+            width: 210mm;
+            max-width: 100%;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+
+            margin: 0 auto 18px;
+        }
+
+        .button-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            min-height: 42px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+
+            padding: 10px 17px;
+
+            border: 1px solid transparent;
+            border-radius: 9px;
+
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 800;
+
+            cursor: pointer;
+            text-decoration: none;
+
+            transition:
+                transform 0.2s ease,
+                background-color 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            color: white;
+            background: var(--primary);
+        }
+
+        .btn-secondary {
+            color: #334155;
+            background: white;
+            border-color: #cbd5e1;
+        }
+
+        .print-hint {
+            color: var(--text-medium);
+            font-size: 12px;
+        }
+
+        .invoice-page {
+            width: 210mm;
+            min-height: 297mm;
+
+            margin: 0 auto;
+            padding: 15mm;
+
+            background: var(--white);
+
+            box-shadow:
+                0 18px 50px
+                rgba(15, 23, 42, 0.14);
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 28px;
+
+            padding-bottom: 22px;
+
+            border-bottom:
+                3px solid var(--primary);
+        }
+
+        .company-section {
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+
+            flex: 1;
+        }
+
+        .company-logo {
+            width: 105px;
+            height: 105px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            border: 1px solid var(--border);
+            border-radius: 16px;
+
+            background: #f8fafc;
+
+            overflow: hidden;
+        }
+
+        .company-logo img {
+            width: 100%;
+            height: 100%;
+
+            object-fit: contain;
+
+            padding: 7px;
+        }
+
+        .logo-placeholder {
+            font-size: 46px;
+        }
+
+        .company-info {
+            padding-top: 4px;
+        }
+
+        .company-info h1 {
+            margin-bottom: 6px;
+
+            color: var(--primary);
+
+            font-size: 25px;
+            font-weight: 900;
+        }
+
+        .commercial-name {
+            margin-bottom: 11px;
+
+            color: var(--text-medium);
+
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .company-lines {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+
+            color: var(--text-medium);
+
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .company-lines strong {
+            color: var(--text-dark);
+        }
+
+        .invoice-title-section {
+            min-width: 235px;
+
+            padding: 20px;
+
+            border: 1px solid var(--primary-border);
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary-light),
+                    #ffffff
+                );
+
+            text-align: center;
+        }
+
+        .invoice-title-section h2 {
+            margin-bottom: 15px;
+
+            color: var(--primary);
+
+            font-size: 27px;
+            font-weight: 900;
+        }
+
+        .invoice-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+
+            padding-bottom: 8px;
+
+            border-bottom:
+                1px dashed #cbd5e1;
+
+            font-size: 12px;
+        }
+
+        .meta-row:last-child {
+            border-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .meta-label {
+            color: var(--text-medium);
+        }
+
+        .meta-value {
+            color: var(--text-dark);
+            font-weight: 900;
+        }
+
+        .section {
+            margin-top: 24px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            margin-bottom: 13px;
+
+            color: var(--primary);
+
+            font-size: 17px;
+            font-weight: 900;
+        }
+
+        .section-title::after {
+            content: "";
+
+            flex: 1;
+            height: 1px;
+
+            background: var(--border);
+        }
+
+        .information-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 12px;
+        }
+
+        .information-box {
+            min-height: 72px;
+
+            padding: 13px 15px;
+
+            border: 1px solid var(--border);
+            border-radius: 11px;
+
+            background: #f8fafc;
+        }
+
+        .information-box.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .information-label {
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: var(--text-light);
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .information-value {
+            display: block;
+
+            color: var(--text-dark);
+
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.7;
+
+            word-break: break-word;
+        }
+
+        .financial-table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            border: 1px solid var(--border);
+            border-radius: 12px;
+
+            overflow: hidden;
+        }
+
+        .financial-table th,
+        .financial-table td {
+            padding: 14px 15px;
+
+            border-bottom:
+                1px solid var(--border);
+
+            font-size: 13px;
+        }
+
+        .financial-table th {
+            width: 65%;
+
+            color: #334155;
+
+            background: #f8fafc;
+
+            font-weight: 800;
+            text-align: right;
+        }
+
+        .financial-table td {
+            direction: ltr;
+
+            color: var(--text-dark);
+
+            font-variant-numeric: tabular-nums;
+
+            font-weight: 900;
+            text-align: left;
+        }
+
+        .financial-table tr:last-child th,
+        .financial-table tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .discount-row th,
+        .discount-row td {
+            color: var(--danger);
+        }
+
+        .total-row th,
+        .total-row td {
+            color: var(--success);
+
+            background: #f0fdf4;
+
+            font-size: 17px;
+        }
+
+        .invoice-footer {
+            margin-top: 34px;
+            padding-top: 20px;
+
+            border-top:
+                1px solid var(--border);
+        }
+
+        .footer-message {
+            margin-bottom: 20px;
+
+            padding: 15px;
+
+            border: 1px solid var(--primary-border);
+            border-radius: 11px;
+
+            color: #1e3a8a;
+
+            background: var(--primary-light);
+
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.8;
+
+            text-align: center;
+        }
+
+        .footer-bottom {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 25px;
+        }
+
+        .footer-company {
+            color: var(--text-medium);
+
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        .signature-box {
+            min-width: 185px;
+
+            padding-top: 40px;
+
+            border-bottom:
+                1px solid #94a3b8;
+
+            color: var(--text-medium);
+
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .document-note {
+            margin-top: 18px;
+
+            color: #94a3b8;
+
+            font-size: 9px;
+            line-height: 1.6;
+
+            text-align: center;
+        }
+
+        @media screen and (max-width: 900px) {
+            body {
+                padding: 12px;
+            }
+
+            .invoice-page {
+                width: 100%;
+                min-height: auto;
+
+                padding: 22px;
+            }
+
+            .screen-actions {
+                width: 100%;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .invoice-header {
+                flex-direction: column;
+            }
+
+            .invoice-title-section {
+                width: 100%;
+            }
+
+            .information-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .information-box.full-width {
+                grid-column: auto;
+            }
+        }
+
+        @media screen and (max-width: 600px) {
+            .company-section {
+                flex-direction: column;
+            }
+
+            .company-logo {
+                width: 85px;
+                height: 85px;
+            }
+
+            .company-info h1 {
+                font-size: 21px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .signature-box {
+                min-width: 0;
+            }
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+
+                background: white;
+
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .screen-actions {
+                display: none !important;
+            }
+
+            .invoice-page {
+                width: 210mm;
+                min-height: 297mm;
+
+                margin: 0;
+                padding: 14mm;
+
+                box-shadow: none;
+            }
+
+            .invoice-header,
+            .section,
+            .information-box,
+            .financial-table,
+            .invoice-footer {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="screen-actions">
+
+        <div class="button-group">
+
+            <button
+                type="button"
+                class="btn btn-primary"
+                onclick="window.print()"
+            >
+                🖨️ طباعة أو حفظ PDF
+            </button>
+
+            <a
+                href="{{ url_for(
+                    'invoice_details',
+                    invoice_id=invoice['id']
+                ) }}"
+                class="btn btn-secondary"
+            >
+                ↩️ الرجوع للتفاصيل
+            </a>
+
+        </div>
+
+        <div class="print-hint">
+            اختر من نافذة الطباعة: Save as PDF
+        </div>
+
+    </div>
+
+
+    <main class="invoice-page">
+
+        <header class="invoice-header">
+
+            <div class="company-section">
+
+                <div class="company-logo">
+
+                    {% if logo_path %}
+
+                        <img
+                            src="{{ url_for(
+                                'static',
+                                filename=logo_path
+                            ) }}"
+                            alt="شعار الشركة"
+                        >
+
+                    {% else %}
+
+                        <div class="logo-placeholder">
+                            🏢
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="company-info">
+
+                    <h1>
+                        {{ company_settings.company_name or "اسم الشركة" }}
+                    </h1>
+
+                    {% if company_settings.commercial_name %}
+
+                        <div class="commercial-name">
+                            {{ company_settings.commercial_name }}
+                        </div>
+
+                    {% endif %}
+
+
+                    <div class="company-lines">
+
+                        {% if company_settings.address %}
+                            <div>
+                                <strong>العنوان:</strong>
+                                {{ company_settings.address }}
+                            </div>
+                        {% endif %}
+
+                        {% if company_settings.phone %}
+                            <div>
+                                <strong>الهاتف:</strong>
+                                {{ company_settings.phone }}
+                            </div>
+                        {% endif %}
+
+                        {% if company_settings.email %}
+                            <div>
+                                <strong>البريد الإلكتروني:</strong>
+                                {{ company_settings.email }}
+                            </div>
+                        {% endif %}
+
+                        {% if company_settings.website %}
+                            <div>
+                                <strong>الموقع:</strong>
+                                {{ company_settings.website }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="invoice-title-section">
+
+                <h2>
+                    فاتورة
+                </h2>
+
+                <div class="invoice-meta">
+
+                    <div class="meta-row">
+                        <span class="meta-label">
+                            رقم الفاتورة
+                        </span>
+
+                        <span class="meta-value">
+                            {{ invoice['invoice_number'] or '-' }}
+                        </span>
+                    </div>
+
+                    <div class="meta-row">
+                        <span class="meta-label">
+                            تاريخ الفاتورة
+                        </span>
+
+                        <span class="meta-value">
+                            {{ invoice['invoice_date'] or '-' }}
+                        </span>
+                    </div>
+
+                    <div class="meta-row">
+                        <span class="meta-label">
+                            رقم التسجيل الضريبي
+                        </span>
+
+                        <span class="meta-value">
+                            {{
+                                company_settings.tax_registration_number
+                                or '-'
+                            }}
+                        </span>
+                    </div>
+
+                    <div class="meta-row">
+                        <span class="meta-label">
+                            السجل التجاري
+                        </span>
+
+                        <span class="meta-value">
+                            {{
+                                company_settings.commercial_registration_number
+                                or '-'
+                            }}
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <section class="section">
+
+            <h3 class="section-title">
+                بيانات العميل
+            </h3>
+
+            <div class="information-grid">
+
+                <div class="information-box">
+
+                    <span class="information-label">
+                        العميل المسجل في البرنامج
+                    </span>
+
+                    <span class="information-value">
+                        {{ invoice['customer_name'] or '-' }}
+                    </span>
+
+                </div>
+
+
+                <div class="information-box">
+
+                    <span class="information-label">
+                        رقم الهاتف
+                    </span>
+
+                    <span class="information-value">
+                        {{ invoice['customer_phone'] or '-' }}
+                    </span>
+
+                </div>
+
+
+                <div class="information-box">
+
+                    <span class="information-label">
+                        اسم المشتري داخل الفاتورة
+                    </span>
+
+                    <span class="information-value">
+                        {{ invoice['buyer_name'] or '-' }}
+                    </span>
+
+                </div>
+
+
+                <div class="information-box">
+
+                    <span class="information-label">
+                        الرقم الضريبي للمشتري
+                    </span>
+
+                    <span class="information-value">
+                        {{ invoice['buyer_registration'] or '-' }}
+                    </span>
+
+                </div>
+
+
+                <div class="information-box full-width">
+
+                    <span class="information-label">
+                        عنوان المشتري
+                    </span>
+
+                    <span class="information-value">
+                        {{ invoice['buyer_address'] or '-' }}
+                    </span>
+
+                </div>
+
+
+                {% if invoice['customer_notes'] %}
+
+                    <div class="information-box full-width">
+
+                        <span class="information-label">
+                            ملاحظات العميل
+                        </span>
+
+                        <span class="information-value">
+                            {{ invoice['customer_notes'] }}
+                        </span>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </section>
+
+
+        <section class="section">
+
+            <h3 class="section-title">
+                بيانات البائع
+            </h3>
+
+            <div class="information-grid">
+
+                <div class="information-box">
+
+                    <span class="information-label">
+                        اسم البائع داخل الفاتورة
+                    </span>
+
+                    <span class="information-value">
+                        {{ invoice['seller_name'] or '-' }}
+                    </span>
+
+                </div>
+
+
+                <div class="information-box">
+
+                    <span class="information-label">
+                        الرقم الضريبي للبائع
+                    </span>
+
+                    <span class="information-value">
+                        {{ invoice['seller_registration'] or '-' }}
+                    </span>
+
+                </div>
+
+
+                <div class="information-box full-width">
+
+                    <span class="information-label">
+                        عنوان البائع
+                    </span>
+
+                    <span class="information-value">
+                        {{ invoice['seller_address'] or '-' }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="section">
+
+            <h3 class="section-title">
+                الملخص المالي
+            </h3>
+
+            <table class="financial-table">
+
+                <tbody>
+
+                    <tr>
+                        <th>
+                            الإجمالي قبل الضريبة
+                        </th>
+
+                        <td>
+                            {{
+                                "{:,.2f}".format(
+                                    invoice['before_tax'] or 0
+                                )
+                            }}
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <th>
+                            ضريبة القيمة المضافة
+                        </th>
+
+                        <td>
+                            {{
+                                "{:,.2f}".format(
+                                    invoice['vat'] or 0
+                                )
+                            }}
+                        </td>
+                    </tr>
+
+
+                    <tr class="discount-row">
+                        <th>
+                            خصم تحت حساب الضريبة
+                        </th>
+
+                        <td>
+                            {{
+                                "{:,.2f}".format(
+                                    invoice['withholding_tax'] or 0
+                                )
+                            }}
+                        </td>
+                    </tr>
+
+
+                    <tr class="total-row">
+                        <th>
+                            الإجمالي بعد الضريبة
+                        </th>
+
+                        <td>
+                            {{
+                                "{:,.2f}".format(
+                                    invoice['after_tax'] or 0
+                                )
+                            }}
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+
+        <footer class="invoice-footer">
+
+            {% if company_settings.invoice_footer %}
+
+                <div class="footer-message">
+                    {{ company_settings.invoice_footer }}
+                </div>
+
+            {% else %}
+
+                <div class="footer-message">
+                    شكرًا لتعاملكم معنا
+                </div>
+
+            {% endif %}
+
+
+            <div class="footer-bottom">
+
+                <div class="footer-company">
+
+                    <div>
+                        {{
+                            company_settings.company_name
+                            or "برنامج إدارة الفواتير"
+                        }}
+                    </div>
+
+                    {% if invoice['xml_filename'] %}
+                        <div>
+                            ملف المصدر:
+                            {{ invoice['xml_filename'] }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+
+                <div class="signature-box">
+                    توقيع وختم الشركة
+                </div>
+
+            </div>
+
+
+            <div class="document-note">
+                تم إنشاء هذه الصفحة بواسطة برنامج إدارة الفواتير الإلكترونية.
+            </div>
+
+        </footer>
+
+    </main>
+
+</body>
+
+</html>

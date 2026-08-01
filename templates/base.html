@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+            برنامج إدارة الفواتير الإلكترونية
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <aside class="sidebar">
+
+            <div class="sidebar-brand">
+
+                <div class="brand-icon">
+                    📑
+                </div>
+
+                <div>
+                    <h1>إدارة الفواتير</h1>
+
+                    <p>
+                        Electronic Invoice Manager
+                    </p>
+                </div>
+
+            </div>
+
+
+            <nav class="sidebar-nav">
+
+                <a
+                    href="{{ url_for('dashboard') }}"
+                    class="nav-link
+                    {% if request.endpoint == 'dashboard' %}
+                        active
+                    {% endif %}"
+                >
+                    <span class="nav-icon">🏠</span>
+                    <span>الرئيسية</span>
+                </a>
+
+
+                <a
+                    href="{{ url_for('customers') }}"
+                    class="nav-link
+                    {% if request.endpoint in [
+                        'customers',
+                        'add_customer',
+                        'edit_customer',
+                        'delete_customer'
+                    ] %}
+                        active
+                    {% endif %}"
+                >
+                    <span class="nav-icon">👥</span>
+                    <span>العملاء</span>
+                </a>
+
+
+                <a
+                    href="{{ url_for('invoices') }}"
+                    class="nav-link
+                    {% if request.endpoint in [
+                        'invoices',
+                        'upload_invoice',
+                        'invoice_details',
+                        'delete_invoice'
+                    ] %}
+                        active
+                    {% endif %}"
+                >
+                    <span class="nav-icon">📄</span>
+                    <span>الفواتير</span>
+                </a>
+
+
+                <a
+                    href="{{ url_for('reports') }}"
+                    class="nav-link
+                    {% if request.endpoint == 'reports' %}
+                        active
+                    {% endif %}"
+                >
+                    <span class="nav-icon">📊</span>
+                    <span>التقارير</span>
+                </a>
+
+
+                {% if current_user and current_user.role == "admin" %}
+
+                    <a
+                        href="{{ url_for('users') }}"
+                        class="nav-link
+                        {% if request.endpoint in [
+                            'users',
+                            'add_user',
+                            'edit_user',
+                            'reset_user_password',
+                            'toggle_user',
+                            'delete_user'
+                        ] %}
+                            active
+                        {% endif %}"
+                    >
+                        <span class="nav-icon">👤</span>
+                        <span>المستخدمون</span>
+                    </a>
+
+
+                    <a
+                        href="{{ url_for('backup.backup_page') }}"
+                        class="nav-link
+                        {% if request.blueprint == 'backup' %}
+                            active
+                        {% endif %}"
+                    >
+                        <span class="nav-icon">💾</span>
+                        <span>النسخ الاحتياطي</span>
+                    </a>
+                    <a
+    href="{{ url_for('settings.settings_page') }}"
+    class="nav-link
+    {% if request.blueprint == 'settings' %}
+        active
+    {% endif %}"
+>
+    <span class="nav-icon">⚙️</span>
+    <span>الإعدادات</span>
+</a>
+
+                {% endif %}
+
+
+                <a
+                    href="{{ url_for('logout') }}"
+                    class="nav-link logout-link"
+                    onclick="
+                        return confirm(
+                            'هل تريد تسجيل الخروج؟'
+                        );
+                    "
+                >
+                    <span class="nav-icon">🚪</span>
+                    <span>تسجيل الخروج</span>
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-footer">
+
+                {% if current_user %}
+
+                    <p>
+                        {{ current_user.full_name }}
+                    </p>
+
+                    <small>
+                        {% if current_user.role == "admin" %}
+                            مدير النظام
+                        {% else %}
+                            موظف
+                        {% endif %}
+                    </small>
+
+                {% else %}
+
+                    <p>الإصدار 2.0</p>
+
+                    <small>
+                        جميع الحقوق محفوظة
+                    </small>
+
+                {% endif %}
+
+            </div>
+
+        </aside>
+
+
+        <main class="main-content">
+
+            <header class="topbar">
+
+                <div class="topbar-title">
+
+                    <button
+                        type="button"
+                        class="sidebar-toggle"
+                        id="sidebarToggle"
+                        aria-label="فتح القائمة"
+                    >
+                        ☰
+                    </button>
+
+
+                    <div>
+
+                        <h2>
+                            {% block page_title %}
+                                الرئيسية
+                            {% endblock %}
+                        </h2>
+
+                        <p>
+                            {% block page_description %}
+                                متابعة وإدارة بيانات الفواتير
+                            {% endblock %}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {% if current_user %}
+
+                    <div class="topbar-user">
+
+                        <div class="user-avatar">
+                            {{ current_user.full_name[0] }}
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                {{ current_user.full_name }}
+                            </strong>
+
+                            <span>
+                                {% if current_user.role == "admin" %}
+                                    مدير النظام
+                                {% else %}
+                                    موظف
+                                {% endif %}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            </header>
+
+
+            <section class="page-content">
+
+                {% with messages = get_flashed_messages(
+                    with_categories=true
+                ) %}
+
+                    {% if messages %}
+
+                        <div class="flash-messages">
+
+                            {% for category, message in messages %}
+
+                                <div
+                                    class="alert alert-{{ category }}"
+                                >
+
+                                    <span>
+                                        {% if category == 'success' %}
+                                            ✅
+                                        {% elif category == 'danger' %}
+                                            ❌
+                                        {% elif category == 'warning' %}
+                                            ⚠️
+                                        {% else %}
+                                            ℹ️
+                                        {% endif %}
+                                    </span>
+
+                                    <p>
+                                        {{ message }}
+                                    </p>
+
+                                    <button
+                                        type="button"
+                                        class="alert-close"
+                                        onclick="
+                                            this.parentElement.remove()
+                                        "
+                                    >
+                                        ×
+                                    </button>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+                {% endwith %}
+
+
+                {% block content %}
+                {% endblock %}
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <script>
+        const sidebarToggle =
+            document.getElementById("sidebarToggle");
+
+        const sidebar =
+            document.querySelector(".sidebar");
+
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener(
+                "click",
+                function () {
+                    sidebar.classList.toggle("open");
+                }
+            );
+        }
+
+
+        document.addEventListener(
+            "click",
+            function (event) {
+                if (
+                    window.innerWidth <= 900 &&
+                    sidebar &&
+                    sidebar.classList.contains("open") &&
+                    !sidebar.contains(event.target) &&
+                    event.target !== sidebarToggle
+                ) {
+                    sidebar.classList.remove("open");
+                }
+            }
+        );
+
+
+        window.setTimeout(
+            function () {
+                const messages =
+                    document.querySelectorAll(".alert");
+
+                messages.forEach(
+                    function (message) {
+                        message.classList.add(
+                            "alert-hide"
+                        );
+
+                        window.setTimeout(
+                            function () {
+                                message.remove();
+                            },
+                            400
+                        );
+                    }
+                );
+            },
+            6000
+        );
+    </script>
+
+
+    {% block scripts %}
+    {% endblock %}
+
+</body>
+
+</html>

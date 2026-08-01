@@ -1,0 +1,158 @@
+<document><uuid>EGM0S2R5DST7KBGXBE6K5WYK10</uuid>
+<submissionUUID>ZYRBCZH47DYPAY6PAE6K5WYK10</submissionUUID>
+<longId>G14YCPY9N27SFW32BE6K5WYK10V7oxTC1785504307</longId>
+<internalId>54</internalId>
+<typeName>i</typeName>
+<typeVersionName>1.0</typeVersionName>
+<issuerId>615619126</issuerId>
+<issuerName>محمد محمد محمد القصاص الجبل للاستثمار العقاري والمقاولات</issuerName>
+<receiverId>472686437</receiverId>
+<receiverName>سامي محمد حسن  سامكو بريك لتصنيع وتوريدالمنتجات الاسمنتيه</receiverName>
+<dateTimeIssued>2026-07-31T13:24:43</dateTimeIssued>
+<dateTimeReceived>2026-07-31T13:25:07</dateTimeReceived>
+<totalSales>1000000</totalSales>
+<totalDiscount>0</totalDiscount>
+<netAmount>1000000</netAmount>
+<total>1140000</total>
+<status>Valid</status>
+<document>{
+      &#34;issuer&#34;: {
+        &#34;address&#34;: {
+          &#34;branchID&#34;: &#34;0&#34;,
+          &#34;country&#34;: &#34;EG&#34;,
+          &#34;governate&#34;: &#34;كفر الشيخ&#34;,
+          &#34;regionCity&#34;: &#34;مركز سيدى سالم&#34;,
+          &#34;street&#34;: &#34;قريه الغنام سيدي سالم&#34;,
+          &#34;buildingNumber&#34;: &#34;0&#34;,
+          &#34;postalCode&#34;: &#34;&#34;,
+          &#34;floor&#34;: null,
+          &#34;room&#34;: null,
+          &#34;landmark&#34;: null,
+          &#34;additionalInformation&#34;: &#34; &#34;
+        },
+        &#34;type&#34;: &#34;B&#34;,
+        &#34;id&#34;: &#34;615619126&#34;,
+        &#34;name&#34;: &#34;محمد محمد محمد القصاص الجبل للاستثمار العقاري والمقاولات&#34;
+      },
+      &#34;receiver&#34;: {
+        &#34;address&#34;: {
+          &#34;country&#34;: &#34;EG&#34;,
+          &#34;governate&#34;: &#34;الجيزه&#34;,
+          &#34;regionCity&#34;: &#34;قسم امبابه&#34;,
+          &#34;street&#34;: &#34;شارع المشتل بجوار مستشفى ناهيا م امبابه امبابه&#34;,
+          &#34;buildingNumber&#34;: &#34;0&#34;,
+          &#34;postalCode&#34;: null,
+          &#34;floor&#34;: null,
+          &#34;room&#34;: null,
+          &#34;landmark&#34;: null,
+          &#34;additionalInformation&#34;: &#34; &#34;
+        },
+        &#34;type&#34;: &#34;B&#34;,
+        &#34;id&#34;: &#34;472686437&#34;,
+        &#34;name&#34;: &#34;سامي محمد حسن  سامكو بريك لتصنيع وتوريدالمنتجات الاسمنتيه&#34;
+      },
+      &#34;documentType&#34;: &#34;i&#34;,
+      &#34;documentTypeVersion&#34;: &#34;1.0&#34;,
+      &#34;dateTimeIssued&#34;: &#34;2026-07-31T13:24:43Z&#34;,
+      &#34;internalID&#34;: &#34;54&#34;,
+      &#34;references&#34;: [],
+      &#34;payment&#34;: {},
+      &#34;delivery&#34;: {},
+      &#34;invoiceLines&#34;: [
+        {
+          &#34;description&#34;: &#34;سن  &#34;,
+          &#34;itemType&#34;: &#34;EGS&#34;,
+          &#34;itemCode&#34;: &#34;EG-615619126-el1-275&#34;,
+          &#34;unitType&#34;: &#34;EA&#34;,
+          &#34;quantity&#34;: 1,
+          &#34;internalCode&#34;: &#34;&#34;,
+          &#34;salesTotal&#34;: 1000000,
+          &#34;total&#34;: 1140000,
+          &#34;valueDifference&#34;: 0,
+          &#34;totalTaxableFees&#34;: 0,
+          &#34;netTotal&#34;: 1000000,
+          &#34;itemsDiscount&#34;: 0,
+          &#34;unitValue&#34;: {
+            &#34;currencySold&#34;: &#34;EGP&#34;,
+            &#34;amountEGP&#34;: 1000000,
+            &#34;amountSold&#34;: 0
+          },
+          &#34;discount&#34;: {},
+          &#34;taxableItems&#34;: [
+            {
+              &#34;taxType&#34;: &#34;T1&#34;,
+              &#34;amount&#34;: 140000,
+              &#34;subType&#34;: &#34;V009&#34;,
+              &#34;rate&#34;: 14
+            }
+          ]
+        }
+      ],
+      &#34;totalSalesAmount&#34;: 1000000,
+      &#34;totalDiscountAmount&#34;: 0,
+      &#34;netAmount&#34;: 1000000,
+      &#34;taxTotals&#34;: [
+        {
+          &#34;taxType&#34;: &#34;T1&#34;,
+          &#34;amount&#34;: 140000
+        }
+      ],
+      &#34;totalAmount&#34;: 1140000,
+      &#34;totalItemsDiscountAmount&#34;: 0,
+      &#34;extraDiscountAmount&#34;: 0,
+      &#34;signatures&#34;: [
+        {
+          &#34;signatureType&#34;: &#34;I&#34;,
+          &#34;value&#34;: &#34;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&#34;
+        }
+      ],
+      &#34;taxpayerActivityCode&#34;: &#34;4100&#34;
+    }</document>
+<transformationStatus>original</transformationStatus>
+<validationResults>
+  <status>Valid</status>
+  <validationSteps>
+    <name>Step-03.ITIDA Signature Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-04.NationalID Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-05.TaxpayerProfile Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-06.Simple Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-07.Code Field Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+  <validationSteps>
+    <name>Step-08. Duplicate Submission Validator</name>
+    <status>Valid</status>
+    <error />
+  </validationSteps>
+</validationResults>
+<maxPercision>2</maxPercision>
+<invoiceLineItemCodes>
+  <codeTypeId>9</codeTypeId>
+  <codeTypeNamePrimaryLang>EGS</codeTypeNamePrimaryLang>
+  <codeTypeNameSecondaryLang>EGS</codeTypeNameSecondaryLang>
+  <itemCode>EG-615619126-el1-275</itemCode>
+  <codeNamePrimaryLang>Natural Sand</codeNamePrimaryLang>
+  <codeNameSecondaryLang>زلط سن مقاسات مختلفه</codeNameSecondaryLang>
+</invoiceLineItemCodes>
+<documentLinesTotalCount />
+<additionalMetadata />
+<lateSubmissionRequestNumber />
+<serviceDeliveryDate />
+</document>

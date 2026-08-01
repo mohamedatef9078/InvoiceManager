@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+
+{% block title %}
+النسخ الاحتياطي - برنامج إدارة الفواتير
+{% endblock %}
+
+{% block page_title %}
+💾 النسخ الاحتياطي
+{% endblock %}
+
+{% block page_description %}
+إنشاء نسخة احتياطية من قاعدة البيانات واستعادتها عند الحاجة
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .backup-container {
+        width: 100%;
+        max-width: 1050px;
+        margin: 0 auto;
+    }
+
+    .backup-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .backup-card {
+        position: relative;
+        overflow: hidden;
+        min-height: 310px;
+    }
+
+    .backup-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 5px;
+        height: 100%;
+    }
+
+    .create-backup-card::after {
+        background: #2563eb;
+    }
+
+    .restore-backup-card::after {
+        background: #d97706;
+    }
+
+    .backup-icon {
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        border-radius: 20px;
+        font-size: 34px;
+    }
+
+    .create-backup-card .backup-icon {
+        color: #1d4ed8;
+        background: #dbeafe;
+    }
+
+    .restore-backup-card .backup-icon {
+        color: #92400e;
+        background: #fef3c7;
+    }
+
+    .backup-card h3 {
+        margin-bottom: 10px;
+        font-size: 21px;
+        font-weight: 800;
+    }
+
+    .backup-card p {
+        margin-bottom: 18px;
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.9;
+    }
+
+    .backup-list {
+        margin: 0 0 22px;
+        padding-right: 20px;
+        color: #475569;
+        font-size: 13px;
+        line-height: 2;
+    }
+
+    .backup-warning {
+        margin-bottom: 18px;
+        padding: 14px;
+        border: 1px solid #fde68a;
+        border-radius: 12px;
+        color: #92400e;
+        background: #fef3c7;
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .backup-file-input {
+        margin-bottom: 16px;
+    }
+
+    .backup-actions {
+        margin-top: auto;
+    }
+
+    .backup-card-inner {
+        min-height: 260px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .backup-info-card {
+        margin-top: 24px;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .info-box {
+        padding: 18px;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        background: #f8fafc;
+        text-align: center;
+    }
+
+    .info-box span {
+        display: block;
+        margin-bottom: 8px;
+        color: #64748b;
+        font-size: 12px;
+    }
+
+    .info-box strong {
+        color: #0f172a;
+        font-size: 15px;
+    }
+
+    @media (max-width: 850px) {
+        .backup-grid,
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+
+<div class="backup-container">
+
+    <div class="backup-grid">
+
+        <div class="content-card backup-card create-backup-card">
+
+            <div class="backup-card-inner">
+
+                <div class="backup-icon">
+                    💾
+                </div>
+
+                <h3>
+                    إنشاء نسخة احتياطية
+                </h3>
+
+                <p>
+                    نزّل نسخة كاملة من قاعدة البيانات تحتوي على العملاء
+                    والفواتير والمستخدمين وجميع البيانات المسجلة.
+                </p>
+
+                <ul class="backup-list">
+                    <li>العملاء وبياناتهم.</li>
+                    <li>الفواتير والإجماليات.</li>
+                    <li>المستخدمون والصلاحيات.</li>
+                    <li>جميع البيانات المحفوظة داخل البرنامج.</li>
+                </ul>
+
+                <div class="backup-actions">
+
+                    <a
+                        href="{{ url_for('backup.download_backup') }}"
+                        class="btn btn-primary btn-block"
+                    >
+                        ⬇️ تنزيل نسخة احتياطية
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="content-card backup-card restore-backup-card">
+
+            <div class="backup-card-inner">
+
+                <div class="backup-icon">
+                    ♻️
+                </div>
+
+                <h3>
+                    استعادة نسخة احتياطية
+                </h3>
+
+                <p>
+                    اختر ملف النسخة الاحتياطية السابق، وسيتم استبدال قاعدة
+                    البيانات الحالية بالنسخة التي اخترتها.
+                </p>
+
+                <div class="backup-warning">
+                    ⚠️ الاستعادة ستستبدل البيانات الحالية بالكامل.
+                    أنشئ نسخة احتياطية جديدة قبل تنفيذ الاستعادة.
+                </div>
+
+                <form
+                    action="{{ url_for('backup.restore_backup') }}"
+                    method="POST"
+                    enctype="multipart/form-data"
+                    onsubmit="
+                        return confirm(
+                            'هل أنت متأكد؟ سيتم استبدال قاعدة البيانات الحالية بالكامل.'
+                        );
+                    "
+                >
+
+                    <div class="form-group backup-file-input">
+
+                        <label
+                            for="backup_file"
+                            class="form-label"
+                        >
+                            ملف النسخة الاحتياطية
+                        </label>
+
+                        <input
+                            id="backup_file"
+                            name="backup_file"
+                            type="file"
+                            class="form-control"
+                            accept=".db,.sqlite,.sqlite3"
+                            required
+                        >
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="btn btn-warning btn-block"
+                    >
+                        ♻️ استعادة النسخة
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="content-card backup-info-card">
+
+        <div class="card-header">
+
+            <div>
+                <h3>
+                    نصائح مهمة
+                </h3>
+
+                <p>
+                    للحفاظ على بيانات البرنامج من الضياع
+                </p>
+            </div>
+
+        </div>
+
+        <div class="info-grid">
+
+            <div class="info-box">
+                <span>التكرار المقترح</span>
+                <strong>نسخة كل أسبوع</strong>
+            </div>
+
+            <div class="info-box">
+                <span>مكان الحفظ</span>
+                <strong>فلاشة أو Google Drive</strong>
+            </div>
+
+            <div class="info-box">
+                <span>نوع الملف</span>
+                <strong>SQLite Database</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

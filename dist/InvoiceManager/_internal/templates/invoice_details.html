@@ -1,0 +1,480 @@
+{% extends "base.html" %}
+
+{% block title %}
+تفاصيل الفاتورة
+{% endblock %}
+
+{% block page_title %}
+📄 تفاصيل الفاتورة
+{% endblock %}
+
+{% block page_description %}
+عرض بيانات الفاتورة والملخص المالي ونسخة الطباعة
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .invoice-details-page {
+        direction: rtl;
+        width: 100%;
+        max-width: 1150px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+    }
+
+    .page-header h1 {
+        margin: 0 0 6px;
+        font-size: 28px;
+    }
+
+    .page-header p {
+        margin: 0;
+        color: #64748b;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .print-button {
+        color: #ffffff;
+        background: #2563eb;
+        border-color: #2563eb;
+    }
+
+    .print-button:hover {
+        color: #ffffff;
+        background: #1d4ed8;
+        border-color: #1d4ed8;
+    }
+
+    .details-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 22px;
+        margin-bottom: 22px;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+    }
+
+    .details-card h2 {
+        margin-top: 0;
+        margin-bottom: 18px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #edf0f4;
+        font-size: 20px;
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .detail-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 14px;
+    }
+
+    .detail-box.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .detail-label {
+        display: block;
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    .detail-value {
+        display: block;
+        font-weight: 700;
+        color: #0f172a;
+        word-break: break-word;
+        line-height: 1.7;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 15px;
+    }
+
+    .summary-box {
+        border-radius: 12px;
+        padding: 18px;
+        text-align: center;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+    }
+
+    .summary-box .label {
+        display: block;
+        color: #64748b;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .summary-box .value {
+        display: block;
+        font-size: 21px;
+        font-weight: 800;
+        direction: ltr;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .vat-box {
+        background: #eff6ff;
+        border-color: #bfdbfe;
+    }
+
+    .vat-box .value {
+        color: #1d4ed8;
+    }
+
+    .discount-box {
+        background: #fff7ed;
+        border-color: #fed7aa;
+    }
+
+    .discount-box .value {
+        color: #c2410c;
+    }
+
+    .total-box {
+        background: #f0fdf4;
+        border-color: #bbf7d0;
+    }
+
+    .total-box .value {
+        color: #15803d;
+    }
+
+    @media (max-width: 900px) {
+        .summary-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 650px) {
+        .details-grid,
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .detail-box.full-width {
+            grid-column: auto;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+        .header-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="invoice-details-page">
+
+    <div class="page-header">
+
+        <div>
+            <h1>
+                تفاصيل الفاتورة
+            </h1>
+
+            <p>
+                فاتورة رقم:
+                <strong>
+                    {{ invoice['invoice_number'] or '-' }}
+                </strong>
+            </p>
+        </div>
+
+
+        <div class="header-actions">
+
+            <a
+                href="{{ url_for(
+                    'print_invoice.print_invoice',
+                    invoice_id=invoice['id']
+                ) }}"
+                class="btn print-button"
+                target="_blank"
+            >
+                🖨️ طباعة أو حفظ PDF
+            </a>
+
+
+            <a
+                href="{{ url_for('invoices') }}"
+                class="btn btn-secondary"
+            >
+                ↩️ الرجوع للفواتير
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="details-card">
+
+        <h2>
+            بيانات الفاتورة
+        </h2>
+
+        <div class="details-grid">
+
+            <div class="detail-box">
+
+                <span class="detail-label">
+                    رقم الفاتورة
+                </span>
+
+                <span class="detail-value">
+                    {{ invoice['invoice_number'] or '-' }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <span class="detail-label">
+                    تاريخ الفاتورة
+                </span>
+
+                <span class="detail-value">
+                    {{ invoice['invoice_date'] or '-' }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <span class="detail-label">
+                    اسم العميل المسجل
+                </span>
+
+                <span class="detail-value">
+                    {{ invoice['customer_name'] or '-' }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <span class="detail-label">
+                    هاتف العميل
+                </span>
+
+                <span class="detail-value">
+                    {{ invoice['customer_phone'] or '-' }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-box full-width">
+
+                <span class="detail-label">
+                    ملاحظات العميل
+                </span>
+
+                <span class="detail-value">
+                    {{ invoice['customer_notes'] or '-' }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <span class="detail-label">
+                    اسم المشتري داخل الفاتورة
+                </span>
+
+                <span class="detail-value">
+                    {{ invoice['buyer_name'] or '-' }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <span class="detail-label">
+                    الرقم الضريبي للمشتري
+                </span>
+
+                <span class="detail-value">
+                    {{ invoice['buyer_registration'] or '-' }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-box full-width">
+
+                <span class="detail-label">
+                    عنوان المشتري
+                </span>
+
+                <span class="detail-value">
+                    {{ invoice['buyer_address'] or '-' }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <span class="detail-label">
+                    اسم البائع
+                </span>
+
+                <span class="detail-value">
+                    {{ invoice['seller_name'] or '-' }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <span class="detail-label">
+                    الرقم الضريبي للبائع
+                </span>
+
+                <span class="detail-value">
+                    {{ invoice['seller_registration'] or '-' }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-box full-width">
+
+                <span class="detail-label">
+                    عنوان البائع
+                </span>
+
+                <span class="detail-value">
+                    {{ invoice['seller_address'] or '-' }}
+                </span>
+
+            </div>
+
+
+            <div class="detail-box full-width">
+
+                <span class="detail-label">
+                    اسم ملف XML
+                </span>
+
+                <span class="detail-value">
+                    {{ invoice['xml_filename'] or '-' }}
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="details-card">
+
+        <h2>
+            الملخص المالي
+        </h2>
+
+        <div class="summary-grid">
+
+            <div class="summary-box">
+
+                <span class="label">
+                    قبل الضريبة
+                </span>
+
+                <span class="value">
+                    {{ "{:,.2f}".format(
+                        invoice['before_tax'] or 0
+                    ) }}
+                </span>
+
+            </div>
+
+
+            <div class="summary-box vat-box">
+
+                <span class="label">
+                    ضريبة القيمة المضافة
+                </span>
+
+                <span class="value">
+                    {{ "{:,.2f}".format(
+                        invoice['vat'] or 0
+                    ) }}
+                </span>
+
+            </div>
+
+
+            <div class="summary-box discount-box">
+
+                <span class="label">
+                    خصم تحت حساب الضريبة
+                </span>
+
+                <span class="value">
+                    {{ "{:,.2f}".format(
+                        invoice['withholding_tax'] or 0
+                    ) }}
+                </span>
+
+            </div>
+
+
+            <div class="summary-box total-box">
+
+                <span class="label">
+                    الإجمالي بعد الضريبة
+                </span>
+
+                <span class="value">
+                    {{ "{:,.2f}".format(
+                        invoice['after_tax'] or 0
+                    ) }}
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
