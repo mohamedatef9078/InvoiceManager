@@ -62,19 +62,27 @@ app.register_blueprint(settings_blueprint)
 app.register_blueprint(print_blueprint)
 app.register_blueprint(pdf_blueprint)
 app.register_blueprint(excel_blueprint)
+
 app.config["SECRET_KEY"] = (
     "electronic-invoice-manager-secret-key-change-this"
 )
 
 app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
 
+
 @app.route("/service-worker.js")
 def service_worker():
-    return app.send_static_file("service-worker.js")
+    return app.send_static_file(
+        "service-worker.js"
+    )
+
 
 @app.route("/manifest.json")
 def manifest():
-    return app.send_static_file("manifest.json")
+    return app.send_static_file(
+        "manifest.json"
+    )
+
 
 ALLOWED_EXTENSIONS = {"xml"}
 
@@ -96,7 +104,10 @@ def login_required(view_function):
                 url_for("login")
             )
 
-        return view_function(*args, **kwargs)
+        return view_function(
+            *args,
+            **kwargs,
+        )
 
     return wrapped_view
 
@@ -124,13 +135,18 @@ def admin_required(view_function):
                 url_for("dashboard")
             )
 
-        return view_function(*args, **kwargs)
+        return view_function(
+            *args,
+            **kwargs,
+        )
 
     return wrapped_view
 
 
 def get_current_user():
-    user_id = session.get("user_id")
+    user_id = session.get(
+        "user_id"
+    )
 
     if not user_id:
         return None
@@ -149,14 +165,17 @@ def get_current_user():
 
         WHERE id = ?
         """,
-        (user_id,),
+        (
+            user_id,
+        ),
     )
 
 
 @app.context_processor
 def inject_current_user():
     return {
-        "current_user": get_current_user(),
+        "current_user":
+            get_current_user(),
     }
 
 
@@ -167,7 +186,10 @@ def inject_current_user():
 def allowed_file(filename):
     return (
         "." in filename
-        and filename.rsplit(".", 1)[1].lower()
+        and filename.rsplit(
+            ".",
+            1,
+        )[1].lower()
         in ALLOWED_EXTENSIONS
     )
 
@@ -228,7 +250,9 @@ def get_dashboard_statistics():
             financial_totals["vat"],
 
         "withholding_tax":
-            financial_totals["withholding_tax"],
+            financial_totals[
+                "withholding_tax"
+            ],
 
         "after_tax":
             financial_totals["after_tax"],
@@ -239,7 +263,10 @@ def get_dashboard_statistics():
 # تسجيل الدخول والخروج
 # =========================================================
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route(
+    "/login",
+    methods=["GET", "POST"],
+)
 def login():
     if session.get("user_id"):
         return redirect(
@@ -281,7 +308,9 @@ def login():
 
             WHERE username = ?
             """,
-            (username,),
+            (
+                username,
+            ),
         )
 
         if user is None:
@@ -319,10 +348,21 @@ def login():
 
         session.clear()
 
-        session["user_id"] = user["id"]
-        session["user_full_name"] = user["full_name"]
-        session["username"] = user["username"]
-        session["user_role"] = user["role"]
+        session["user_id"] = (
+            user["id"]
+        )
+
+        session["user_full_name"] = (
+            user["full_name"]
+        )
+
+        session["username"] = (
+            user["username"]
+        )
+
+        session["user_role"] = (
+            user["role"]
+        )
 
         flash(
             f"مرحبًا {user['full_name']}.",
@@ -360,7 +400,9 @@ def logout():
 @app.route("/")
 @login_required
 def dashboard():
-    statistics = get_dashboard_statistics()
+    statistics = (
+        get_dashboard_statistics()
+    )
 
     latest_invoices = fetch_all(
         """
@@ -372,7 +414,8 @@ def dashboard():
             invoices.vat,
             invoices.withholding_tax,
             invoices.after_tax,
-            customers.name AS customer_name
+            customers.name
+                AS customer_name
 
         FROM invoices
 
@@ -539,7 +582,9 @@ def add_customer():
         )
 
         print(
-            f"تمت إضافة العميل إلى PostgreSQL بنجاح. ID={customer_id}"
+            "تمت إضافة العميل إلى "
+            "PostgreSQL بنجاح. "
+            f"ID={customer_id}"
         )
 
         flash(
@@ -578,7 +623,9 @@ def edit_customer(customer_id):
         FROM customers
         WHERE id = ?
         """,
-        (customer_id,),
+        (
+            customer_id,
+        ),
     )
 
     if customer is None:
@@ -678,7 +725,9 @@ def delete_customer(customer_id):
 
         GROUP BY customers.id
         """,
-        (customer_id,),
+        (
+            customer_id,
+        ),
     )
 
     if customer is None:
@@ -706,7 +755,9 @@ def delete_customer(customer_id):
         DELETE FROM customers
         WHERE id = ?
         """,
-        (customer_id,),
+        (
+            customer_id,
+        ),
     )
 
     flash(
@@ -748,8 +799,11 @@ def invoices():
             invoices.xml_filename,
             invoices.created_at,
 
-            customers.id AS customer_id,
-            customers.name AS customer_name
+            customers.id
+                AS customer_id,
+
+            customers.name
+                AS customer_name
 
         FROM invoices
 
@@ -859,7 +913,9 @@ def upload_invoice():
 
         WHERE id = ?
         """,
-        (int(customer_id),),
+        (
+            int(customer_id),
+        ),
     )
 
     if customer is None:
@@ -912,7 +968,12 @@ def upload_invoice():
             url_for("invoices")
         )
 
-    except Exception:
+    except Exception as error:
+        print(
+            "حدث خطأ أثناء قراءة XML:",
+            repr(error),
+        )
+
         flash(
             "حدث خطأ غير متوقع أثناء قراءة ملف الفاتورة.",
             "danger",
@@ -938,6 +999,13 @@ def upload_invoice():
         return redirect(
             url_for("invoices")
         )
+
+    buyer_registration = str(
+        invoice_data.get(
+            "buyer_registration",
+            "",
+        )
+    ).strip()
 
     filename = secure_filename(
         xml_file.filename
@@ -987,10 +1055,7 @@ def upload_invoice():
                     "",
                 ),
 
-                invoice_data.get(
-                    "buyer_registration",
-                    "",
-                ),
+                buyer_registration,
 
                 invoice_data.get(
                     "buyer_address",
@@ -1041,10 +1106,40 @@ def upload_invoice():
             "success",
         )
 
-    except IntegrityError:
+    except IntegrityError as error:
+        error_message = str(
+            error
+        )
+
+        if (
+            "unique_customer_invoice"
+            in error_message
+        ):
+            flash(
+                "هذه الفاتورة مسجلة بالفعل لنفس العميل ونفس الشركة.",
+                "warning",
+            )
+
+        else:
+            print(
+                "حدث خطأ في قاعدة البيانات أثناء إضافة الفاتورة:",
+                repr(error),
+            )
+
+            flash(
+                "حدث خطأ أثناء حفظ الفاتورة في قاعدة البيانات.",
+                "danger",
+            )
+
+    except Exception as error:
+        print(
+            "حدث خطأ غير متوقع أثناء حفظ الفاتورة:",
+            repr(error),
+        )
+
         flash(
-            "هذه الفاتورة مسجلة بالفعل لهذا العميل.",
-            "warning",
+            "حدث خطأ غير متوقع أثناء حفظ الفاتورة.",
+            "danger",
         )
 
     return redirect(
@@ -1079,7 +1174,9 @@ def invoice_details(invoice_id):
 
         WHERE invoices.id = ?
         """,
-        (invoice_id,),
+        (
+            invoice_id,
+        ),
     )
 
     if invoice is None:
@@ -1114,7 +1211,9 @@ def delete_invoice(invoice_id):
 
         WHERE id = ?
         """,
-        (invoice_id,),
+        (
+            invoice_id,
+        ),
     )
 
     if invoice is None:
@@ -1132,7 +1231,9 @@ def delete_invoice(invoice_id):
         DELETE FROM invoices
         WHERE id = ?
         """,
-        (invoice_id,),
+        (
+            invoice_id,
+        ),
     )
 
     flash(
@@ -1152,7 +1253,9 @@ def delete_invoice(invoice_id):
 @app.route("/reports")
 @login_required
 def reports():
-    statistics = get_dashboard_statistics()
+    statistics = (
+        get_dashboard_statistics()
+    )
 
     customer_reports = fetch_all(
         """
@@ -1331,8 +1434,10 @@ def add_user():
             url_for("users")
         )
 
-    password_hash = generate_password_hash(
-        password
+    password_hash = (
+        generate_password_hash(
+            password
+        )
     )
 
     try:
@@ -1388,7 +1493,9 @@ def edit_user(user_id):
 
         WHERE id = ?
         """,
-        (user_id,),
+        (
+            user_id,
+        ),
     )
 
     if user is None:
@@ -1422,7 +1529,10 @@ def edit_user(user_id):
     }:
         role = "employee"
 
-    if not full_name or not username:
+    if (
+        not full_name
+        or not username
+    ):
         flash(
             "الاسم واسم المستخدم مطلوبان.",
             "danger",
@@ -1452,10 +1562,21 @@ def edit_user(user_id):
             ),
         )
 
-        if user_id == session.get("user_id"):
-            session["user_full_name"] = full_name
-            session["username"] = username
-            session["user_role"] = role
+        if (
+            user_id
+            == session.get("user_id")
+        ):
+            session["user_full_name"] = (
+                full_name
+            )
+
+            session["username"] = (
+                username
+            )
+
+            session["user_role"] = (
+                role
+            )
 
         flash(
             "تم تعديل المستخدم بنجاح.",
@@ -1485,7 +1606,9 @@ def reset_user_password(user_id):
         FROM users
         WHERE id = ?
         """,
-        (user_id,),
+        (
+            user_id,
+        ),
     )
 
     if user is None:
@@ -1513,8 +1636,10 @@ def reset_user_password(user_id):
             url_for("users")
         )
 
-    password_hash = generate_password_hash(
-        new_password
+    password_hash = (
+        generate_password_hash(
+            new_password
+        )
     )
 
     execute_query(
@@ -1547,7 +1672,10 @@ def reset_user_password(user_id):
 )
 @admin_required
 def toggle_user(user_id):
-    if user_id == session.get("user_id"):
+    if (
+        user_id
+        == session.get("user_id")
+    ):
         flash(
             "لا يمكنك إيقاف حسابك أثناء تسجيل الدخول.",
             "warning",
@@ -1567,7 +1695,9 @@ def toggle_user(user_id):
 
         WHERE id = ?
         """,
-        (user_id,),
+        (
+            user_id,
+        ),
     )
 
     if user is None:
@@ -1622,7 +1752,10 @@ def toggle_user(user_id):
 )
 @admin_required
 def delete_user(user_id):
-    if user_id == session.get("user_id"):
+    if (
+        user_id
+        == session.get("user_id")
+    ):
         flash(
             "لا يمكنك حذف حسابك أثناء تسجيل الدخول.",
             "warning",
@@ -1642,7 +1775,9 @@ def delete_user(user_id):
 
         WHERE id = ?
         """,
-        (user_id,),
+        (
+            user_id,
+        ),
     )
 
     if user is None:
@@ -1667,7 +1802,10 @@ def delete_user(user_id):
             """
         )
 
-        if admin_count["total"] <= 1:
+        if (
+            admin_count["total"]
+            <= 1
+        ):
             flash(
                 "لا يمكن حذف آخر مدير نشط في النظام.",
                 "warning",
@@ -1682,7 +1820,9 @@ def delete_user(user_id):
         DELETE FROM users
         WHERE id = ?
         """,
-        (user_id,),
+        (
+            user_id,
+        ),
     )
 
     flash(
@@ -1730,7 +1870,9 @@ def change_password():
 
         WHERE id = ?
         """,
-        (session["user_id"],),
+        (
+            session["user_id"],
+        ),
     )
 
     if user is None:
@@ -1765,7 +1907,10 @@ def change_password():
             or url_for("dashboard")
         )
 
-    if new_password != confirm_password:
+    if (
+        new_password
+        != confirm_password
+    ):
         flash(
             "كلمتا المرور الجديدتان غير متطابقتين.",
             "warning",
@@ -1776,8 +1921,10 @@ def change_password():
             or url_for("dashboard")
         )
 
-    password_hash = generate_password_hash(
-        new_password
+    password_hash = (
+        generate_password_hash(
+            new_password
+        )
     )
 
     execute_query(

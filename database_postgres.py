@@ -15,7 +15,6 @@ load_dotenv()
 
 class PostgreSQLDatabaseError(Exception):
     """خطأ خاص بقاعدة بيانات PostgreSQL."""
-
     pass
 
 
@@ -254,7 +253,8 @@ def initialize_database():
                 CONSTRAINT unique_customer_invoice
                     UNIQUE (
                         customer_id,
-                        invoice_number
+                        invoice_number,
+                        buyer_registration
                     )
             )
             """
@@ -297,6 +297,14 @@ def initialize_database():
             CREATE INDEX IF NOT EXISTS
                 idx_invoices_date
             ON invoices(invoice_date)
+            """
+        )
+
+        cursor.execute(
+            """
+            CREATE INDEX IF NOT EXISTS
+                idx_invoices_buyer_registration
+            ON invoices(buyer_registration)
             """
         )
 

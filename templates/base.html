@@ -18,22 +18,22 @@
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='style.css') }}"
-        
     >
+
     <link
-    rel="manifest"
-    href="{{ url_for('static', filename='manifest.json') }}"
->
+        rel="manifest"
+        href="{{ url_for('static', filename='manifest.json') }}"
+    >
 
-<meta
-    name="theme-color"
-    content="#2563eb"
->
+    <meta
+        name="theme-color"
+        content="#2563eb"
+    >
 
-<link
-    rel="apple-touch-icon"
-    href="{{ url_for('static', filename='icons/icon-192.png') }}"
->
+    <link
+        rel="apple-touch-icon"
+        href="{{ url_for('static', filename='icons/icon-192.png') }}"
+    >
 </head>
 
 <body>
@@ -150,16 +150,18 @@
                         <span class="nav-icon">💾</span>
                         <span>النسخ الاحتياطي</span>
                     </a>
+
+
                     <a
-    href="{{ url_for('settings.settings_page') }}"
-    class="nav-link
-    {% if request.blueprint == 'settings' %}
-        active
-    {% endif %}"
->
-    <span class="nav-icon">⚙️</span>
-    <span>الإعدادات</span>
-</a>
+                        href="{{ url_for('settings.settings_page') }}"
+                        class="nav-link
+                        {% if request.blueprint == 'settings' %}
+                            active
+                        {% endif %}"
+                    >
+                        <span class="nav-icon">⚙️</span>
+                        <span>الإعدادات</span>
+                    </a>
 
                 {% endif %}
 
@@ -342,16 +344,22 @@
 
     <script>
         const sidebarToggle =
-            document.getElementById("sidebarToggle");
+            document.getElementById(
+                "sidebarToggle"
+            );
 
         const sidebar =
-            document.querySelector(".sidebar");
+            document.querySelector(
+                ".sidebar"
+            );
 
         if (sidebarToggle && sidebar) {
             sidebarToggle.addEventListener(
                 "click",
                 function () {
-                    sidebar.classList.toggle("open");
+                    sidebar.classList.toggle(
+                        "open"
+                    );
                 }
             );
         }
@@ -363,11 +371,17 @@
                 if (
                     window.innerWidth <= 900 &&
                     sidebar &&
-                    sidebar.classList.contains("open") &&
-                    !sidebar.contains(event.target) &&
+                    sidebar.classList.contains(
+                        "open"
+                    ) &&
+                    !sidebar.contains(
+                        event.target
+                    ) &&
                     event.target !== sidebarToggle
                 ) {
-                    sidebar.classList.remove("open");
+                    sidebar.classList.remove(
+                        "open"
+                    );
                 }
             }
         );
@@ -376,7 +390,9 @@
         window.setTimeout(
             function () {
                 const messages =
-                    document.querySelectorAll(".alert");
+                    document.querySelectorAll(
+                        ".alert"
+                    );
 
                 messages.forEach(
                     function (message) {
@@ -400,15 +416,21 @@
 
     {% block scripts %}
     {% endblock %}
-<script>
+
+
     <script>
-if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function () {
-        navigator.serviceWorker.register("/service-worker.js");
-    });
-}
-</script>
-</script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener(
+                "load",
+                function () {
+                    navigator.serviceWorker.register(
+                        "/service-worker.js"
+                    );
+                }
+            );
+        }
+    </script>
+
 </body>
 
 </html>
